@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Conversor de Link LPSG</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    padding: 40px;
+}
+
+.container {
+    background: #fff;
+    max-width: 900px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* TOPO */
+.topo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.titulo {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.topo img {
+    max-width: 300px;
+}
+
+/* TUTORIAL CENTRALIZADO E MENOR */
+.tutorial {
+    color: rgba(0,0,0,0.55);
+    font-size: 12px;
+    margin: 15px auto 18px auto;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.tutorial ol {
+    list-style-position: inside;
+    padding: 0;
+    margin: 0;
+}
+
+/* INPUT */
+textarea {
+    width: 100%;
+    height: 70px;
+    font-size: 14px;
+    padding: 10px;
+}
+
+textarea::placeholder {
+    color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* BOTÃO */
+.actions {
+    margin-top: 15px;
+    text-align: center;
+}
+
+button {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* OUTPUTS */
+.output-group {
+    margin-top: 20px;
+    display: none;
+}
+
+.output-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.output {
+    flex: 1;
+    padding: 8px;
+    background: #eee;
+    word-break: break-all;
+    min-height: 38px;
+}
+
+.copy-btn {
+    font-size: 18px;
+    padding: 6px 12px;
+}
+
+.msg {
+    margin-top: 10px;
+    font-size: 13px;
+    color: green;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topo">
+        <div class="titulo">Conversor de Link LPSG</div>
+        <img src="https://i.imgur.com/PTnKFGo.png" alt="Logo">
+    </div>
+
+    <!-- TUTORIAL -->
+    <div class="tutorial">
+        <ol>
+            <li>Abra o LPSG e vá até o vídeo desejado.</li>
+            <li>Clique com o botão direito e clique em <em>“Copiar endereço da imagem”</em>.</li>
+            <li>Cole o link gerado na caixa abaixo.</li>
+            <li>Um dos três links gerados abrirá o vídeo.</li>
+        </ol>
+    </div>
+
+    <!-- INPUT -->
+    <textarea id="input" placeholder="Cole o link .jpg aqui e clique para gerar os links de vídeo"></textarea>
+
+    <div class="actions">
+        <button onclick="converter()">Converter</button>
+    </div>
+
+    <div class="output-group" id="outputs">
+
+        <div class="output-row">
+            <div class="output" id="outMp4"></div>
+            <button class="copy-btn" onclick="copiar('outMp4')" title="Copiar">📋</button>
+        </div>
+
+        <div class="output-row">
+            <div class="output" id="outMkv"></div>
+            <button class="copy-btn" onclick="copiar('outMkv')" title="Copiar">📋</button>
+        </div>
+
+        <div class="output-row">
+            <div class="output" id="outMov"></div>
+            <button class="copy-btn" onclick="copiar('outMov')" title="Copiar">📋</button>
+        </div>
+
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+</div>
+
+<script>
+const input = document.getElementById("input");
+const msg = document.getElementById("msg");
+const outputs = document.getElementById("outputs");
+
+input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        converter();
+    }
+});
+
+function converter() {
+    msg.innerText = "";
+    outputs.style.display = "none";
+
+    const texto = input.value.trim();
+    if (!texto) {
+        msg.innerText = "Cole um link válido.";
+        return;
+    }
+
+    const regex = /https?:\/\/cdn-videos\.lpsg\.com\/data\/attachments\/posters\/(\d+)\/(.+)\.jpg/i;
+    const match = texto.match(regex);
+
+    if (!match) {
+        msg.innerText = "Link fora do padrão esperado.";
+        return;
+    }
+
+    const base = `https://cdn-videos.lpsg.com/data/video/${match[1]}/${match[2]}`;
+
+    document.getElementById("outMp4").innerText = base + ".mp4";
+    document.getElementById("outMkv").innerText = base + ".mkv";
+    document.getElementById("outMov").innerText = base + ".mov";
+
+    outputs.style.display = "block";
+}
+
+function copiar(id) {
+    const texto = document.getElementById(id).innerText;
+    if (!texto) return;
+
+    navigator.clipboard.writeText(texto).then(() => {
+        msg.innerText = "Link copiado ✔";
+    });
+}
+</script>
+
+</body>
+</html>
+
